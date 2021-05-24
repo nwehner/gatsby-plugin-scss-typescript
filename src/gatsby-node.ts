@@ -28,37 +28,44 @@ export const onCreateWebpackConfig = ({ stage, plugins, actions, rules }, option
 	const typeLoader: ObjectRule = {
 		loader: "dts-css-modules-loader",
 		options: {
-			namedExport: true,
-			...declarationOptions
+			...declarationOptions,
+			namedExport: true
 		}
 	};
 
 	const sassLoaders = [ ...useCss, sassLoader ];
 	const typeLoaders = [ typeLoader, ...useCssModules, sassLoader ];
 
-	setWebpackConfig({
-		module: {
-			rules: [
-				{
-					oneOf: [
+	switch (stage) {
+		case 'develop':
+		case 'build-javascript':
+		case 'build-html':
+		case 'develop-html': {
+			setWebpackConfig({
+				module: {
+					rules: [
 						{
-							test: /\.module\.s(a|c)ss$/,
-							use: typeLoaders,
-						},
-						{
-							test: /\.s(a|c)ss$/,
-							use: sassLoaders,
+							oneOf: [
+								{
+									test: /\.module\.s(a|c)ss$/,
+									use: typeLoaders,
+								},
+								{
+									test: /\.s(a|c)ss$/,
+									use: sassLoaders,
+								},
+							],
 						},
 					],
 				},
-			],
-		},
-		optimization: {
-			minimizer: [plugins.minifyCss(cssMinifyOptions)],
-		},
-		plugins: [
-			plugins.extractText(cssExtractOptions),
-			plugins.ignore(/css\.d\.ts$/),
-		],
-	});
+				optimization: {
+					minimizer: [plugins.minifyCss(cssMinifyOptions)],
+				},
+				plugins: [
+					plugins.extractText(cssExtractOptions),
+					plugins.ignore(/css\.d\.ts$/),
+				],
+			});
+		}
+	}
 };
