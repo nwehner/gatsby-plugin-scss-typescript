@@ -1,6 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/tslint/config
-import 'core-js/stable';
-
 import { RuleSetUseItem } from 'webpack';
 
 type ObjectRule = Exclude<RuleSetUseItem, string | Function>;
